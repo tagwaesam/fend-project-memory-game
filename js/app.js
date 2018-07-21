@@ -1,7 +1,35 @@
+
+/*
+ * set up the event listener for a card. If a card is clicked:
+ *  - display the card's symbol (put this functionality in another function that you call from this one)
+ *  - add the card to a *list* of "open" cards (put this functionality in another function that you call from this one)
+ *  - if the list already has another card, check to see if the two cards match
+ *    + if the cards do match, lock the cards in the open position (put this functionality in another function that you call from this one)
+ *    + if the cards do not match, remove the cards from the list and hide the card's symbol (put this functionality in another function that you call from this one)
+ *    + increment the move counter and display it on the page (put this functionality in another function that you call from this one)
+ *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
+ */
+
+
+
 /*
  * Create a list that holds all of your cards
  */
+var cards=["fa-diamond","fa-paper-plane-o","fa-anchor","fa-bolt","fa-cube","fa-leaf","fa-bicycle","fa-bomb","fa-bomb","fa-bicycle","fa-leaf","fa-cube","fa-bolt","fa-anchor","fa-paper-plane-o","fa-diamond"];
+//cards+=cards;
 
+//initilaize list to store the setuation of the cards
+var cards_open=[];
+var cards_matched=[];
+//initilaize the counter
+var counter=0;
+
+var list_i=0;
+//to control the time wait
+var i_wait=0;
+//define variable to hols the 2 open cards
+var target1;
+var target2;
 
 /*
  * Display the cards on the page
@@ -9,6 +37,8 @@
  *   - loop through each card and create its HTML
  *   - add each card's HTML to the page
  */
+
+
 
 // Shuffle function from http://stackoverflow.com/a/2450976
 function shuffle(array) {
@@ -24,15 +54,152 @@ function shuffle(array) {
 
     return array;
 }
+function display_card(){
+  //shuffle the list of cards using the provided "shuffle" method below
+  var array=shuffle(cards);
+  //array=array.split(',');
+  console.log(array);
+  //loop through each card and create its HTML
+  var card_html = document.querySelector(".deck");
+  card_html.innerHTML = '';
+  const fragment = document.createDocumentFragment();
+  for (i=0;i<16;i++){
+    var card = document.createElement("li");
+    card.classList.add("card");
+    card.classList.add("show");
+    card.innerHTML="<i "+"class=\"fa "+array[i]+"\">"+"</i>";
+
+    //console.log(array[i]);
+    fragment.appendChild(card);
+  }
+  card_html.appendChild(fragment);
+}
 
 
-/*
- * set up the event listener for a card. If a card is clicked:
- *  - display the card's symbol (put this functionality in another function that you call from this one)
- *  - add the card to a *list* of "open" cards (put this functionality in another function that you call from this one)
- *  - if the list already has another card, check to see if the two cards match
- *    + if the cards do match, lock the cards in the open position (put this functionality in another function that you call from this one)
- *    + if the cards do not match, remove the cards from the list and hide the card's symbol (put this functionality in another function that you call from this one)
- *    + increment the move counter and display it on the page (put this functionality in another function that you call from this one)
- *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
- */
+
+//TODO:add code to control showing the cards for the first time the close it
+display_card();
+
+setTimeout(function (){
+  var elem=document.getElementsByClassName("card");
+  for (var i = 0;i < elem.length; i++) {
+  elem[i].classList.remove("show");
+}}
+, 2500);
+
+
+
+
+ //display counter on the page
+function display_counter(){
+  var game_counter = document.querySelector(".moves");
+  game_counter.innerHTML=counter;
+}
+
+
+//check matching cards
+function check_matching(target){
+
+  var is_open=false;
+  for (var i=0;i<cards_open.length;i++){
+    if(cards_open[i]==target.innerHTML){
+      console.log("matched");
+      is_open=true;
+
+      break;
+    }
+
+  }
+  if(is_open==false){
+    //to be sure that we just check the matching for 2 card
+    if(list_i>1){
+      cards_open=[];
+      list_i=0;
+    }
+
+    cards_open[list_i]=target.innerHTML;
+    list_i+=1;
+    return false;
+  }
+  else {
+    cards_matched[cards_matched.length]=target.innerHTML;
+    counter+=1;
+    cards_open=[];
+    list_i=0;
+    display_counter();
+    return true;
+
+  }
+}
+//display the card's symbol
+function display_card_symbol(target){
+  target.classList.add("show");
+
+  var is_match=check_matching(target);
+  if(is_match==true){
+    var elements = document.getElementsByClassName(target.firstElementChild.classList);
+    console.log("elements="+elements);
+    for (var i = 0;i < elements.length; i++) {
+        elements[i].parentElement.classList.add("match");
+    }
+    //to reset the 2 target
+    i_wait=0;
+
+  }
+  else {
+      //set wait time before close card
+      var wait=500;
+      //to control the time wait by the  cards
+      if(i_wait==0){
+        target1=target;
+        i_wait=1;
+
+      }
+      else {
+        target2=target;
+        i_wait=0;
+        //set wait time to insure that the 2 opened card closed at the same time
+        setTimeout(function (){
+          target1.classList.remove("show");
+          target2.classList.remove("show");
+          target1="";
+          target2="";
+        }, wait);
+
+      }
+
+
+
+
+
+  }
+  //check if all matched
+  if(cards_matched.length==8){
+    setTimeout(function (){
+      alert("Gongratulations you win !!!!!!!!!!!!!" );
+    }, 1000);
+
+    //reload the page
+    setTimeout(function (){
+      location.reload();
+    }, 3000);
+
+  }
+
+}
+ //set up the event listener for a card. If a card is clicked:
+var card = document.querySelector(".deck");
+card.addEventListener("click", function(event){
+    //to be sure that we just check the matching for 2 card
+    if(list_i>1){
+      cards_open=[];
+      list_i=0;
+    }
+    //display the card's symbol
+    display_card_symbol(event.target);
+});
+//control the reload symbol
+var refresh = document.querySelector(".fa-repeat");
+refresh.addEventListener("click", function(e){
+    location = location;
+});

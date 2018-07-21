@@ -31,6 +31,8 @@ body {
 h1 {
     font-family: 'Open Sans', sans-serif;
     font-weight: 300;
+    color: black;
+    text-shadow: 2px 2px #02ccba;
 }
 
 /*

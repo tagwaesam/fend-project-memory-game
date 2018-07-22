@@ -1,4 +1,4 @@
-//TODO:there is still problem when clicking the same card the pointer-events: none dosent  stop it
+
 
 
 /*
@@ -17,8 +17,9 @@
 /*
  * Create a list that holds all of your cards
  */
-var cards=["fa-diamond","fa-paper-plane-o","fa-anchor","fa-bolt","fa-cube","fa-leaf","fa-bicycle","fa-bomb","fa-bomb","fa-bicycle","fa-leaf","fa-cube","fa-bolt","fa-anchor","fa-paper-plane-o","fa-diamond"];
+var cards=["fa-diamond","fa-paper-plane-o","fa-anchor","fa-bolt","fa-cube","fa-leaf","fa-bicycle","fa-bomb"];
 //cards+=cards;
+cards = cards.concat(cards);
 
 //initilaize list to store the setuation of the cards
 var cards_open=[];

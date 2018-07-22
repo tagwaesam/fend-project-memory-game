@@ -1,3 +1,5 @@
+//TODO:there is still problem when clicking the same card the pointer-events: none dosent  stop it
+
 
 /*
  * set up the event listener for a card. If a card is clicked:
@@ -27,9 +29,15 @@ var counter=0;
 var list_i=0;
 //to control the time wait
 var i_wait=0;
-//define variable to hols the 2 open cards
+//define variable to hold the 2 open cards
 var target1;
 var target2;
+
+//define counter to count Moves
+var movesCount=0;
+
+//efine counter to count time spend by user
+timeSpend=0;
 
 /*
  * Display the cards on the page
@@ -37,6 +45,24 @@ var target2;
  *   - loop through each card and create its HTML
  *   - add each card's HTML to the page
  */
+
+//function to display time
+function startTime() {
+    var today = new Date();
+    var h = today.getHours();
+    var m = today.getMinutes();
+    var s = today.getSeconds();
+    m = checkTime(m);
+    s = checkTime(s);
+    document.getElementById('txt').innerHTML =
+    h + ":" + m + ":" + s;
+    timeSpend+=1;
+    var t = setTimeout(startTime, 500);
+}
+function checkTime(i) {
+    if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
+    return i;
+}
 
 
 
@@ -88,7 +114,37 @@ setTimeout(function (){
 , 2500);
 
 
+//function to control the number of stars
+function checkhStar() {
+  var stars=3;
+  if (movesCount<16 ){
+    stars=3;
 
+  }
+  else
+    if (movesCount<32){
+      stars=2;
+    }
+
+    else {
+
+        stars=1;
+      }
+
+
+  var el=document.querySelector(".stars");
+
+  const fragment1 = document.createDocumentFragment();
+  el.innerHTML = '';
+  for(var i=1;i<=stars;i++){
+
+
+      var st = document.createElement("li");
+      st.innerHTML="<i class=\"fa fa-star\"></i>";
+      fragment1.appendChild(st);
+    }
+    el.appendChild(fragment1);
+}
 
  //display counter on the page
 function display_counter(){
@@ -135,15 +191,24 @@ function check_matching(target){
 function display_card_symbol(target){
   target.classList.add("show");
 
+  //TODO:remove clik event from target
+  target.style.pointerEvents = "none";
+
   var is_match=check_matching(target);
   if(is_match==true){
     var elements = document.getElementsByClassName(target.firstElementChild.classList);
     console.log("elements="+elements);
     for (var i = 0;i < elements.length; i++) {
         elements[i].parentElement.classList.add("match");
+        //remove clik event from the 2 target
+        elements[i].style.pointerEvents = "none";
     }
     //to reset the 2 target
     i_wait=0;
+
+    //remove clik event from the 2 target
+    //target1.style.pointerEvents = "none";
+    //target2.style.pointerEvents = "none";
 
   }
   else {
@@ -158,25 +223,27 @@ function display_card_symbol(target){
       else {
         target2=target;
         i_wait=0;
+
         //set wait time to insure that the 2 opened card closed at the same time
         setTimeout(function (){
           target1.classList.remove("show");
           target2.classList.remove("show");
+          //add clik event to target 1
+          target1.style.pointerEvents = 'auto';
+          //add clik event to target 2
+          target2.style.pointerEvents = 'auto';
           target1="";
           target2="";
+
         }, wait);
-
+        movesCount+=1;
+        checkhStar();
       }
-
-
-
-
-
   }
   //check if all matched
   if(cards_matched.length==8){
     setTimeout(function (){
-      alert("Gongratulations you win !!!!!!!!!!!!!" );
+      alert("Gongratulations you win in "+timeSpend+"S !!!!!!!!!!!!!" );
     }, 1000);
 
     //reload the page
@@ -194,9 +261,14 @@ card.addEventListener("click", function(event){
     if(list_i>1){
       cards_open=[];
       list_i=0;
+
     }
     //display the card's symbol
-    display_card_symbol(event.target);
+    var str=String(event.target.classList);
+    //console.log(str);
+    if(str.includes('card') ){
+      display_card_symbol(event.target);
+    }
 });
 //control the reload symbol
 var refresh = document.querySelector(".fa-repeat");

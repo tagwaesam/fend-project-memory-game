@@ -244,15 +244,15 @@ function display_card_symbol(target){
   //check if all matched
   if(cards_matched.length==8){
     setTimeout(function (){
-      alert("Gongratulations you win in "+timeSpend+"S !!!!!!!!!!!!!" );
-    }, 1000);
+      //ask the user if he want to play again?
+      var txt;
+      if (confirm("Gongratulations you win in ***"+timeSpend+"S*** !!!!!!!!!!!!!\n"+"***If you want to play again Press a button!***"))
+         //reload the page
+         setTimeout(function (){
+           location.reload();
+         }, 1000);
 
-    //reload the page
-    setTimeout(function (){
-      location.reload();
-    }, 3000);
-
-  }
+    }, 1000);}
 
 }
  //set up the event listener for a card. If a card is clicked:

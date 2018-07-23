@@ -37,7 +37,7 @@ var target2;
 //define counter to count Moves
 var movesCount=0;
 
-//efine counter to count time spend by user
+//define counter to count time spend by user
 timeSpend=0;
 
 /*
@@ -48,22 +48,27 @@ timeSpend=0;
  */
 
 //function to display time
+/*From  https://www.w3schools.com/js/tryit.asp?filename=tryjs_timing_clock*/
+var h=0;
+var m=0;
+var s=0;
 function startTime() {
-    var today = new Date();
-    var h = today.getHours();
-    var m = today.getMinutes();
-    var s = today.getSeconds();
-    m = checkTime(m);
-    s = checkTime(s);
-    document.getElementById('timer').innerHTML =
+     if(s==60){
+       s=0;
+       m+=1;
+     }
+     if (m==60) {
+       m=0;
+       h+=1;
+
+     }
+     document.getElementById('timer').innerHTML =
     h + ":" + m + ":" + s;
     timeSpend+=1;
+    s+=1;
     var t = setTimeout(startTime, 500);
 }
-function checkTime(i) {
-    if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
-    return i;
-}
+
 
 
 
@@ -93,10 +98,8 @@ function display_card(){
   for (i=0;i<16;i++){
     var card = document.createElement("li");
     card.classList.add("card");
-    card.classList.add("show");
+    //card.classList.add("show");
     card.innerHTML="<i "+"class=\"fa "+array[i]+"\">"+"</i>";
-
-    //console.log(array[i]);
     fragment.appendChild(card);
   }
   card_html.appendChild(fragment);
@@ -104,15 +107,15 @@ function display_card(){
 
 
 
-//TODO:add code to control showing the cards for the first time the close it
-display_card();
 
-setTimeout(function (){
-  var elem=document.getElementsByClassName("card");
-  for (var i = 0;i < elem.length; i++) {
-  elem[i].classList.remove("show");
-}}
-, 2500);
+display_card();
+//code to control showing the cards for the first time the close it
+// setTimeout(function (){
+//   var elem=document.getElementsByClassName("card");
+//   for (var i = 0;i < elem.length; i++) {
+//   elem[i].classList.remove("show");
+// }}
+// , 2500);
 
 
 //function to control the number of stars
@@ -192,7 +195,7 @@ function check_matching(target){
 function display_card_symbol(target){
   target.classList.add("show");
 
-  //TODO:remove clik event from target
+  //remove clik event from target
   target.style.pointerEvents = "none";
 
   var is_match=check_matching(target);
@@ -206,10 +209,6 @@ function display_card_symbol(target){
     }
     //to reset the 2 target
     i_wait=0;
-
-    //remove clik event from the 2 target
-    //target1.style.pointerEvents = "none";
-    //target2.style.pointerEvents = "none";
 
   }
   else {
@@ -245,6 +244,7 @@ function display_card_symbol(target){
   if(cards_matched.length==8){
     setTimeout(function (){
       //ask the user if he want to play again?
+      /*from https://www.w3schools.com/js/tryit.asp?filename=tryjs_confirm*/
       var txt;
       if (confirm("Gongratulations you win in ***"+timeSpend+"S*** !!!!!!!!!!!!!\n"+"***If you want to play again Press a button!***"))
          //reload the page

@@ -17,25 +17,25 @@
 /*
  * Create a list that holds all of your cards
  */
-var cards=["fa-diamond","fa-paper-plane-o","fa-anchor","fa-bolt","fa-cube","fa-leaf","fa-bicycle","fa-bomb"];
+let cards=["fa-diamond","fa-paper-plane-o","fa-anchor","fa-bolt","fa-cube","fa-leaf","fa-bicycle","fa-bomb"];
 //cards+=cards;
 cards = cards.concat(cards);
 
 //initilaize list to store the setuation of the cards
-var cards_open=[];
-var cards_matched=[];
+let cardsOpen=[];
+let cardsMatched=[];
 //initilaize the counter
-var counter=0;
+let counter=0;
 
-var list_i=0;
+let listI=0;
 //to control the time wait
-var i_wait=0;
+let Iwait=0;
 //define variable to hold the 2 open cards
-var target1;
-var target2;
+let target1;
+let target2;
 
 //define counter to count Moves
-var movesCount=0;
+let movesCount=0;
 
 //define counter to count time spend by user
 timeSpend=0;
@@ -49,9 +49,10 @@ timeSpend=0;
 
 //function to display time
 /*From  https://www.w3schools.com/js/tryit.asp?filename=tryjs_timing_clock*/
-var h=0;
-var m=0;
-var s=0;
+let h=0;
+let m=0;
+let s=1;
+let toEnd=false;
 function startTime() {
      if(s==60){
        s=0;
@@ -66,15 +67,52 @@ function startTime() {
     h + ":" + m + ":" + s;
     timeSpend+=1;
     s+=1;
-    var t = setTimeout(startTime, 500);
+    if(toEnd==false){
+      let t = setTimeout(startTime, 1000);
+    }
 }
 
+//function to open model after wining
 
+function openModel(){
+  //From :https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_modal
+  var txT="<b>Gongratulations</b> you win in <b>***</b>"+timeSpend+"S<b>***</b> <br>"+"<b>***</b>with "+stars+" stars<b>***</b><br>"+"<b>***</b>If you want to play again Press (<b>X</b>) button<b>!***</b>";
+  //Stop the timer
+  toEnd=true;
+  // Get the modal
+  var modal = document.getElementById('myModal');
+
+  // Get the modal-txt
+  const modaTxt = document.getElementById("txt");
+  //Set the modal text
+  modaTxt.innerHTML=txT;
+
+  // Get the <span> element that closes the modal
+  const span = document.getElementsByClassName("close")[0];
+  //Display the modal
+  modal.style.display = "block";
+
+// When the user clicks on <span> (x), close the modal
+  span.onclick = function() {
+      modal.style.display = "none";
+      //reload the page
+         setTimeout(function (){
+           location.reload();
+         }, 1000);
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+}
 
 
 // Shuffle function from http://stackoverflow.com/a/2450976
 function shuffle(array) {
-    var currentIndex = array.length, temporaryValue, randomIndex;
+    let currentIndex = array.length, temporaryValue, randomIndex;
 
     while (currentIndex !== 0) {
         randomIndex = Math.floor(Math.random() * currentIndex);
@@ -88,21 +126,19 @@ function shuffle(array) {
 }
 function display_card(){
   //shuffle the list of cards using the provided "shuffle" method below
-  var array=shuffle(cards);
-  //array=array.split(',');
-  console.log(array);
+  let array=shuffle(cards);
   //loop through each card and create its HTML
-  var card_html = document.querySelector(".deck");
-  card_html.innerHTML = '';
+  let cardHtml = document.querySelector(".deck");
+  cardHtml.innerHTML = '';
   const fragment = document.createDocumentFragment();
   for (i=0;i<16;i++){
-    var card = document.createElement("li");
+    let card = document.createElement("li");
     card.classList.add("card");
-    //card.classList.add("show");
+    card.classList.add("animated");
     card.innerHTML="<i "+"class=\"fa "+array[i]+"\">"+"</i>";
     fragment.appendChild(card);
   }
-  card_html.appendChild(fragment);
+  cardHtml.appendChild(fragment);
 }
 
 
@@ -111,16 +147,17 @@ function display_card(){
 display_card();
 //code to control showing the cards for the first time the close it
 // setTimeout(function (){
-//   var elem=document.getElementsByClassName("card");
-//   for (var i = 0;i < elem.length; i++) {
+//   let elem=document.getElementsByClassName("card");
+//   for (let i = 0;i < elem.length; i++) {
 //   elem[i].classList.remove("show");
 // }}
 // , 2500);
 
 
 //function to control the number of stars
+let stars=3;
 function checkhStar() {
-  var stars=3;
+
   if (movesCount<16 ){
     stars=3;
 
@@ -136,14 +173,14 @@ function checkhStar() {
       }
 
 
-  var el=document.querySelector(".stars");
+  let el=document.querySelector(".stars");
 
   const fragment1 = document.createDocumentFragment();
   el.innerHTML = '';
-  for(var i=1;i<=stars;i++){
+  for(let i=1;i<=stars;i++){
 
 
-      var st = document.createElement("li");
+      let st = document.createElement("li");
       st.innerHTML="<i class=\"fa fa-star\"></i>";
       fragment1.appendChild(st);
     }
@@ -152,78 +189,85 @@ function checkhStar() {
 
  //display counter on the page
 function display_counter(){
-  var game_counter = document.querySelector(".moves");
-  game_counter.innerHTML=counter;
+  let gameCounter = document.querySelector(".moves");
+  gameCounter.innerHTML=movesCount;
 }
 
 
 //check matching cards
 function check_matching(target){
 
-  var is_open=false;
-  for (var i=0;i<cards_open.length;i++){
-    if(cards_open[i]==target.innerHTML){
-      console.log("matched");
-      is_open=true;
+  let isOpen=false;
+  for (let i=0;i<cardsOpen.length;i++){
+    if(cardsOpen[i]==target.innerHTML){
+      //console.log("matched");
+      isOpen=true;
 
       break;
     }
 
   }
-  if(is_open==false){
+  if(isOpen==false){
     //to be sure that we just check the matching for 2 card
-    if(list_i>1){
-      cards_open=[];
-      list_i=0;
+    if(listI>1){
+      cardsOpen=[];
+      listI=0;
     }
 
-    cards_open[list_i]=target.innerHTML;
-    list_i+=1;
+    cardsOpen[listI]=target.innerHTML;
+    listI+=1;
     return false;
   }
   else {
-    cards_matched[cards_matched.length]=target.innerHTML;
+    cardsMatched[cardsMatched.length]=target.innerHTML;
     counter+=1;
-    cards_open=[];
-    list_i=0;
-    display_counter();
+    cardsOpen=[];
+    listI=0;
+
     return true;
 
   }
 }
 //display the card's symbol
 function display_card_symbol(target){
+
+  movesCount+=1;
+  display_counter();
+  checkhStar();
   target.classList.add("show");
 
   //remove clik event from target
   target.style.pointerEvents = "none";
 
-  var is_match=check_matching(target);
+  let is_match=check_matching(target);
   if(is_match==true){
-    var elements = document.getElementsByClassName(target.firstElementChild.classList);
-    console.log("elements="+elements);
-    for (var i = 0;i < elements.length; i++) {
+    let elements = document.getElementsByClassName(target.firstElementChild.classList);
+    //console.log("elements="+elements);
+    for (let i = 0;i < elements.length; i++) {
         elements[i].parentElement.classList.add("match");
         //remove clik event from the 2 target
         elements[i].style.pointerEvents = "none";
+        //add animation
+        elements[i].parentElement.classList.add("shake");
     }
     //to reset the 2 target
-    i_wait=0;
+    Iwait=0;
 
   }
   else {
       //set wait time before close card
-      var wait=500;
+      let wait=500;
       //to control the time wait by the  cards
-      if(i_wait==0){
+      if(Iwait==0){
         target1=target;
-        i_wait=1;
+        Iwait=1;
 
       }
       else {
         target2=target;
-        i_wait=0;
-
+        Iwait=0;
+        //remove event listener from all card to be sure no other card will clicked until the 2 open card flipped back
+        card.removeEventListener("click",cardClick);
         //set wait time to insure that the 2 opened card closed at the same time
         setTimeout(function (){
           target1.classList.remove("show");
@@ -236,43 +280,42 @@ function display_card_symbol(target){
           target2="";
 
         }, wait);
-        movesCount+=1;
-        checkhStar();
+        //return the event listener to allow for other moves
+        card.addEventListener("click",cardClick);
+        //count the player moves
+
       }
   }
   //check if all matched
-  if(cards_matched.length==8){
-    setTimeout(function (){
-      //ask the user if he want to play again?
-      /*from https://www.w3schools.com/js/tryit.asp?filename=tryjs_confirm*/
-      var txt;
-      if (confirm("Gongratulations you win in ***"+timeSpend+"S*** !!!!!!!!!!!!!\n"+"***If you want to play again Press a button!***"))
-         //reload the page
-         setTimeout(function (){
-           location.reload();
-         }, 1000);
 
+  if(cardsMatched.length==8){
+    setTimeout(function (){
+      //display the wining model
+      openModel();
     }, 1000);}
 
 }
- //set up the event listener for a card. If a card is clicked:
-var card = document.querySelector(".deck");
-card.addEventListener("click", function(event){
-    //to be sure that we just check the matching for 2 card
-    if(list_i>1){
-      cards_open=[];
-      list_i=0;
+//set up the event listener for a card. If a card is clicked:
+function cardClick(event){
+   //to be sure that we just check the matching for 2 card
+   if(listI>1){
+     cardsOpen=[];
+     listI=0;
 
-    }
-    //display the card's symbol
-    var str=String(event.target.classList);
-    //console.log(str);
-    if(str.includes('card') ){
-      display_card_symbol(event.target);
-    }
-});
+   }
+   //display the card's symbol
+   let str=String(event.target.classList);
+   //console.log(str);
+   if(str.includes('card') ){
+     display_card_symbol(event.target);
+   }
+}
+
+let card = document.querySelector(".deck");
+card.addEventListener("click",cardClick);
+
 //control the reload symbol
-var refresh = document.querySelector(".fa-repeat");
+let refresh = document.querySelector(".fa-repeat");
 refresh.addEventListener("click", function(e){
     location = location;
 });
